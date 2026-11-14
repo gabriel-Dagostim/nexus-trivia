@@ -55,6 +55,7 @@ Acesse `http://localhost:3000`. Sem `DATABASE_URL` configurada, cadastros e plac
 ```bash
 npx tsc --noEmit
 npm run lint
+npm test
 npm run build
 ```
 
@@ -62,5 +63,5 @@ npm run build
 
 1. Importe o repositório na **Vercel**.
 2. Em **Storage → Marketplace → Neon (Serverless Postgres)**, conecte um banco gratuito ao projeto (injeta `DATABASE_URL`).
-3. Configure `AUTH_SECRET` nas variáveis de ambiente da Vercel.
+3. Configure `AUTH_SECRET` com um valor aleatório exclusivo de pelo menos 32 caracteres nas variáveis de ambiente da Vercel. Sem ele, a autenticação falha em produção; no desenvolvimento local, a chave temporária muda a cada reinício.
 4. Execute `npx prisma db push` apontando para o banco Neon e publique o deploy em produção.

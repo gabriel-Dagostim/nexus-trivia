@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createSessionToken, hashPassword, setSessionCookie } from '@/lib/auth';
 import { createUser, findUserByEmail } from '@/lib/db';
+import { getJwtSecret } from '@/lib/auth-secret';
 
 const AVATAR_COLORS = ['#ec4899', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444'];
 
@@ -32,6 +33,8 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
+
+    getJwtSecret();
 
     const existing = await findUserByEmail(email);
     if (existing) {

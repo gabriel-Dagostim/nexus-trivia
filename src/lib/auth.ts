@@ -2,15 +2,10 @@ import crypto from 'crypto';
 import { SignJWT, jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
 import { findUserById } from './db';
+import { getJwtSecret } from './auth-secret';
 import type { UserProfile } from '@/types/game';
 
 const COOKIE_NAME = 'nexus_trivia_session';
-
-function getJwtSecret(): Uint8Array {
-  const secret =
-    process.env.AUTH_SECRET || 'nexus-trivia-local-dev-secret-do-not-use-in-prod-9988';
-  return new TextEncoder().encode(secret);
-}
 
 export function hashPassword(password: string): string {
   const salt = crypto.randomBytes(16).toString('hex');
