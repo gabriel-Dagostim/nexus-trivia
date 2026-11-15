@@ -64,3 +64,11 @@ npm run build
 2. Em **Storage → Marketplace → Neon (Serverless Postgres)**, conecte um banco gratuito ao projeto (injeta `DATABASE_URL`).
 3. Configure `AUTH_SECRET` nas variáveis de ambiente da Vercel.
 4. Execute `npx prisma db push` apontando para o banco Neon e publique o deploy em produção.
+
+## Engenharia Assistida por IA: Antes, Falhas e Correções
+
+- **Antes (Baseline inicial):** Template padrão do `create-next-app` (`Next.js 16`, `React 19`, `Tailwind CSS 4`), sem engine de trivia, sem modo Perfil, sem multiplayer P2P e sem camada de persistência.
+- **Falhas identificadas e correções aplicadas:**
+  1. **Erro de escrita no filesystem somente leitura da Vercel sem `DATABASE_URL`:** em deploys iniciais sem Postgres provisionado, gravar `data/local-db.json` no diretório da aplicação falharia na Vercel. Corrigido em `src/lib/prisma.ts` e `src/lib/db.ts` validando `DATABASE_URL` / `POSTGRES_PRISMA_URL` / `POSTGRES_URL` e redirecionando o fallback JSON para `/tmp/nexus-trivia-local-db.json` quando `process.env.VERCEL` está ativo.
+  2. **Exposição do gabarito no cliente P2P e esgotamento de perguntas:** na arquitetura PeerJS (`src/lib/p2p.ts` + `src/lib/game-engine.ts`), enviar a pergunta completa revelaria `correctIndex` no tráfego WebRTC. Corrigido com `sanitizeQuestionForClients()` antes do broadcast e com fallback progressivo em `pickQuestion()` (`src/data/questions/index.ts`) caso uma categoria/dificuldade seja esgotada.
+  3. **Compatibilidade de build, TypeScript e Prisma na Vercel:** adicionado `postinstall: "prisma generate"` e `build: "prisma generate && next build"` em `package.json`, além da validação contínua com `npx tsc --noEmit` e `npm run lint` sem erros ou avisos.
